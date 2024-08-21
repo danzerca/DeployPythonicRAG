@@ -1,7 +1,7 @@
 import os
 from typing import List
 from chainlit.types import AskFileResponse
-from aimakerspace.text_utils import CharacterTextSplitter, TextFileLoader
+from aimakerspace.text_utils import CharacterTextSplitter, TextFileLoader, PDFFileLoader
 from aimakerspace.openai_utils.prompts import (
     UserRolePrompt,
     SystemRolePrompt,
@@ -64,6 +64,19 @@ def process_text_file(file: AskFileResponse):
     texts = text_splitter.split_texts(documents)
     return texts
 
+def process_pdf_file(file: AskFileResponse):
+    import tempfile
+
+    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".pdf") as temp_file:
+        temp_file_path = temp_file.name
+
+    with open(temp_file_path, "wb") as f:
+        f.write(file.content)
+
+    text_loader = PDFFileLoader(temp_file_path)
+    documents = text_loader.load_documents()
+    texts = text_splitter.split_texts(documents)
+    return texts
 
 @cl.on_chat_start
 async def on_chat_start():
@@ -73,7 +86,7 @@ async def on_chat_start():
     while files == None:
         files = await cl.AskFileMessage(
             content="Please upload a Text File file to begin!",
-            accept=["text/plain"],
+            accept=["text/plain", "application/pdf"],
             max_size_mb=2,
             timeout=180,
         ).send()
@@ -86,7 +99,10 @@ async def on_chat_start():
     await msg.send()
 
     # load the file
-    texts = process_text_file(file)
+    if file.path.endswith(".pdf"):
+        texts = process_text_file(file)
+    else:
+        texts = process_pdf_file(file)
 
     print(f"Processing {len(texts)} text chunks")
 
