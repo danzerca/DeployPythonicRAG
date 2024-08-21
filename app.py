@@ -73,8 +73,8 @@ def process_pdf_file(file: AskFileResponse):
     with open(temp_file_path, "wb") as f:
         f.write(file.content)
 
-    text_loader = PDFFileLoader(temp_file_path)
-    documents = text_loader.load_documents()
+    pdf_loader = PDFFileLoader(temp_file_path)
+    documents = pdf_loader.load_documents()
     texts = text_splitter.split_texts(documents)
     return texts
 
@@ -100,9 +100,9 @@ async def on_chat_start():
 
     # load the file
     if file.path.endswith(".pdf"):
-        texts = process_text_file(file)
-    else:
         texts = process_pdf_file(file)
+    else:
+        texts = process_text_file(file)
 
     print(f"Processing {len(texts)} text chunks")
 
