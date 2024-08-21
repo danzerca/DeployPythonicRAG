@@ -133,6 +133,8 @@ Simply put, this downloads the file as a temp file, we load it in with `TextFile
 
 Why do we want to support streaming? What about streaming is important, or useful?
 
+--> Streaming allows the response to be shown to the user as it becomes available. This is useful for long response messages. The user does not have to wait for the entire message to be available before viewing it.
+
 ## On Chat Start:
 
 The next scope is where "the magic happens". On Chat Start is when a user begins a chat session. This will happen whenever a user opens a new chat window, or refreshes an existing chat window.
@@ -174,6 +176,8 @@ Now, we'll save that into our user session!
 ### QUESTION #2: 
 
 Why are we using User Session here? What about Python makes us need to use this? Why not just store everything in a global variable?
+
+--> We are using session so that a user can interact multiple times with the same document upload. Similarly, when the same user revists the app or a different user visits the app, there is a fresh chat with no prior documents added. This keeps the response specific to only the documents loaded. Session is used instead of a global variable in order to handle multiple users at the same time.
 
 ## On Message
 
