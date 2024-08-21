@@ -85,7 +85,7 @@ async def on_chat_start():
     # Wait for the user to upload a file
     while files == None:
         files = await cl.AskFileMessage(
-            content="Please upload a Text File file to begin!",
+            content="Please upload a Text or PDF File file to begin!",
             accept=["text/plain", "application/pdf"],
             max_size_mb=2,
             timeout=180,
